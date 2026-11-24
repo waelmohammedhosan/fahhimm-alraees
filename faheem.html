@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مخزون الفحم - مصنع الريس</title>
+<link rel="icon" type="image/png" href="images/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Tajawal', 'sans-serif'] } } } }
+</script>
+
+<style>
+  body { font-family: 'Tajawal', sans-serif; transition: background-color .3s, color .3s; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-fade-up { animation: fadeInUp 0.5s ease-out forwards; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(100%); transition: transform 0.3s ease; }
+    #sidebar.open { transform: translateX(0); }
+  }
+
+  .marquee-container {
+    position: fixed; top: 0; left: 0; right: 0; height: 40px;
+    background: linear-gradient(90deg, #0F172A, #1E293B, #0F172A);
+    color: #F8FAFC; overflow: hidden; z-index: 9999;
+    display: flex; align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .marquee-content { display: inline-flex; white-space: nowrap; animation: marquee-scroll 30s linear infinite; padding-right: 100%; }
+  .marquee-content span { display: inline-block; font-weight: 700; font-size: 14px; padding: 0 30px; letter-spacing: 0.5px; }
+  .marquee-content span::after { content: '•'; margin-right: 30px; color: #6366F1; }
+  @keyframes marquee-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+  body { padding-top: 40px; }
+  @media print { .marquee-container { display: none; } body { padding-top: 0; } }
+
+  .login-bg {
+    background-image: url('images/bg.jpg');
+    background-size: cover; background-position: center; position: relative;
+  }
+  .login-bg::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(0,0,0,0.7));
+    backdrop-filter: blur(4px); z-index: 0;
+  }
+
+  #dashboardScreen {
+    position: relative;
+    background-image: url('images/bg.jpg');
+    background-repeat: no-repeat; background-position: center;
+    background-size: cover; background-attachment: fixed;
+  }
+  #dashboardScreen::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(248, 250, 252, 0.95); z-index: -1;
+  }
+  .dark #dashboardScreen::before { background: rgba(15, 23, 42, 0.95); }
+
+  .stat-card {
+    background: rgba(255,255,255,0.8);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: all .2s ease;
+  }
+  .dark .stat-card { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.08); }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+
+  input, select, textarea { font-family: 'Tajawal', sans-serif; }
+
+  .search-bar { position: relative; }
+  .search-bar input { padding-right: 3rem; }
+  .search-bar i { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #94A3B8; pointer-events: none; }
+
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .4rem .9rem; border-radius: 999px;
+    font-size: .8rem; font-weight: 700; cursor: pointer;
+    border: 1.5px solid #CBD5E1; background: transparent;
+    color: #475569; transition: all .2s ease;
+  }
+  .dark .filter-chip { border-color: #334155; color: #CBD5E1; }
+  .filter-chip.active { background: #6366F1; color: #fff; border-color: #6366F1; }
+
+  #exportTemplate { position: absolute; left: -9999px; top: 0; width: 900px; background: #fff; color: #000; z-index: -1; padding: 40px; font-family: 'Tajawal', sans-serif; direction: rtl; }
+  #dailyExportTemplate { position: absolute; left: -9999px; top: 0; width: 900px; background: #fff; color: #000; padding: 40px; font-family: 'Tajawal', sans-serif; direction: rtl; }
+  #sawdustExportTemplate { position: absolute; left: -9999px; top: 0; width: 900px; background: #fff; color: #000; padding: 40px; font-family: 'Tajawal', sans-serif; direction: rtl; }
+  #prodExportTemplate { position: absolute; left: -9999px; top: 0; width: 900px; background: #fff; color: #000; padding: 40px; font-family: 'Tajawal', sans-serif; direction: rtl; }
+
+  .watermark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 1; overflow: hidden; }
+  .watermark img { width: 60%; max-width: 600px; opacity: 0.08; transform: rotate(-25deg); }
+
+  .total-box {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 2px solid #86efac; border-radius: 16px;
+    padding: 20px 30px; margin-top: 25px;
+    display: flex; justify-content: space-around; align-items: center;
+    font-weight: 900; box-shadow: 0 4px 12px rgba(16,185,129,0.15);
+  }
+  .total-box .total-item { text-align: center; }
+  .total-box .total-label { font-size: 14px; color: #166534; margin-bottom: 5px; }
+  .total-box .total-value { font-size: 28px; color: #15803d; }
+  .total-box .total-value.orange { color: #ea580c; }
+
+  .sync-dot { width: 10px; height: 10px; border-radius: 50%; background: #94A3B8; transition: all .3s ease; }
+  .sync-dot.online { background: #10B981; box-shadow: 0 0 8px #10B981; }
+  .sync-dot.syncing { background: #F59E0B; animation: pulse 1s infinite; }
+  .sync-dot.offline { background: #EF4444; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+  .login-card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 32px;
+    padding: 40px 32px;
+    width: 100%; max-width: 400px;
+    text-align: center;
+    box-shadow: 0 25px 60px -12px rgba(0,0,0,0.6);
+  }
+
+  .daily-item-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 2px solid #d1fae5;
+    box-shadow: 0 2px 8px rgba(16,185,129,0.08);
+    transition: all .2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .dark .daily-item-card { background: rgba(30,41,59,0.9); border-color: rgba(16,185,129,0.3); }
+  .daily-item-card::before {
+    content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 5px;
+    background: linear-gradient(180deg, #10B981, #059669);
+    border-radius: 0 16px 16px 0;
+  }
+  .daily-item-card:hover { transform: translateX(-3px); box-shadow: 0 6px 20px rgba(16,185,129,0.15); }
+  .daily-item-card .card-header-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 1.5px dashed rgba(16,185,129,0.2);
+  }
+  .daily-item-card .char-type-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46; font-weight: 900; font-size: 14px;
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .dark .daily-item-card .char-type-badge {
+    background: linear-gradient(135deg, rgba(16,185,129,0.3), rgba(5,150,105,0.3));
+    color: #6ee7b7;
+  }
+  .daily-item-card .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .daily-item-card .info-field { background: rgba(240,253,244,0.6); border-radius: 10px; padding: 8px 10px; }
+  .dark .daily-item-card .info-field { background: rgba(15,23,42,0.5); }
+  .daily-item-card .field-label {
+    font-size: 10px; color: #047857; font-weight: 800; margin-bottom: 3px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .dark .daily-item-card .field-label { color: #6ee7b7; }
+  .daily-item-card .field-value { font-size: 15px; font-weight: 900; color: #1E293B; }
+  .dark .daily-item-card .field-value { color: #F8FAFC; }
+  .daily-item-card .field-value.highlight { color: #059669; font-size: 17px; }
+  .dark .daily-item-card .field-value.highlight { color: #34d399; }
+  .daily-item-card .delete-btn {
+    position: absolute; bottom: 10px; left: 10px;
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #fee2e2; color: #dc2626;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s ease; font-size: 12px;
+  }
+  .daily-item-card .delete-btn:hover { background: #fecaca; transform: scale(1.1); }
+
+  .sawdust-item-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    border: 2px solid #fecdd3;
+    box-shadow: 0 2px 8px rgba(225,29,72,0.08);
+    transition: all .2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .dark .sawdust-item-card { background: rgba(30,41,59,0.9); border-color: rgba(225,29,72,0.3); }
+  .sawdust-item-card::before {
+    content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 5px;
+    background: linear-gradient(180deg, #E11D48, #BE123C);
+    border-radius: 0 16px 16px 0;
+  }
+  .sawdust-item-card:hover { transform: translateX(-3px); box-shadow: 0 6px 20px rgba(225,29,72,0.15); }
+  .sawdust-item-card .card-header-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 1.5px dashed rgba(225,29,72,0.2);
+  }
+  .sawdust-item-card .char-type-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #fee2e2, #fecdd3);
+    color: #9f1239; font-weight: 900; font-size: 14px;
+    padding: 5px 12px; border-radius: 999px;
+  }
+  .dark .sawdust-item-card .char-type-badge {
+    background: linear-gradient(135deg, rgba(225,29,72,0.3), rgba(190,18,60,0.3));
+    color: #fda4af;
+  }
+  .sawdust-item-card .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sawdust-item-card .info-field { background: rgba(254,242,242,0.6); border-radius: 10px; padding: 8px 10px; }
+  .dark .sawdust-item-card .info-field { background: rgba(15,23,42,0.5); }
+  .sawdust-item-card .field-label {
+    font-size: 10px; color: #be123c; font-weight: 800; margin-bottom: 3px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .dark .sawdust-item-card .field-label { color: #fda4af; }
+  .sawdust-item-card .field-value { font-size: 15px; font-weight: 900; color: #1E293B; }
+  .dark .sawdust-item-card .field-value { color: #F8FAFC; }
+  .sawdust-item-card .field-value.highlight { color: #dc2626; font-size: 17px; }
+  .dark .sawdust-item-card .field-value.highlight { color: #fb7185; }
+  .sawdust-item-card .delete-btn {
+    position: absolute; bottom: 10px; left: 10px;
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #fee2e2; color: #dc2626;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s ease; font-size: 12px;
+  }
+  .sawdust-item-card .delete-btn:hover { background: #fecaca; transform: scale(1.1); }
+
+  .animated-dev-text {
+    font-weight: 900; font-size: 20px; color: #008000;
+    position: relative; display: inline-block; overflow: hidden;
+  }
+  .animated-dev-text::after {
+    content: ''; position: absolute; top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-20deg);
+    animation: shine 3s ease-in-out infinite;
+  }
+  @keyframes shine { 0% { left: -75%; } 50% { left: 100%; } 100% { left: -75%; } }
+
+  /* ✅ زر التسجيل الصوتي */
+  .voice-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px; width: 100%; padding: 10px 14px;
+    border-radius: 12px; font-weight: 800; font-size: 13px;
+    cursor: pointer; border: 2px solid; transition: all .2s ease;
+    margin-top: 8px;
+  }
+  .voice-btn.idle { background: #f8fafc; color: #475569; border-color: #cbd5e1; }
+  .dark .voice-btn.idle { background: #1e293b; color: #cbd5e1; border-color: #475569; }
+  .voice-btn.idle:hover { background: #f1f5f9; border-color: #6366f1; }
+  .voice-btn.recording {
+    background: #fee2e2; color: #dc2626; border-color: #fca5a5;
+    animation: voicePulse 1.2s infinite;
+  }
+  .voice-btn.recording:hover { background: #fecaca; }
+  @keyframes voicePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+  }
+  .voice-btn.has-recording { background: #f0fdf4; color: #15803d; border-color: #86efac; }
+  .dark .voice-btn.has-recording { background: rgba(22, 163, 74, 0.15); color: #4ade80; border-color: #16a34a; }
+  .voice-player {
+    margin-top: 8px; display: flex; align-items: center; gap: 8px;
+    background: #f0fdf4; border: 1.5px solid #86efac;
+    border-radius: 12px; padding: 8px 12px;
+  }
+  .dark .voice-player { background: rgba(22, 163, 74, 0.15); border-color: #16a34a; }
+  .voice-player audio { flex: 1; height: 32px; }
+  .voice-player .voice-delete {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #fee2e2; color: #dc2626;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border: none; flex-shrink: 0;
+  }
+  .voice-player .voice-delete:hover { background: #fecaca; }
+
+  /* ✅ بطاقة المخزون */
+  .stock-card {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 2px solid #93c5fd; border-radius: 18px;
+    padding: 16px; margin-bottom: 16px; transition: all .3s ease;
+  }
+  .dark .stock-card {
+    background: linear-gradient(135deg, rgba(30,58,138,0.3), rgba(30,64,175,0.2));
+    border-color: rgba(59,130,246,0.5);
+  }
+  .stock-card.low { background: linear-gradient(135deg, #fef2f2, #fee2e2); border-color: #fca5a5; }
+  .dark .stock-card.low { background: linear-gradient(135deg, rgba(127,29,29,0.3), rgba(153,27,27,0.2)); border-color: rgba(239,68,68,0.5); }
+  .stock-card.critical { background: linear-gradient(135deg, #fef2f2, #fecaca); border-color: #ef4444; animation: stockAlert 2s infinite; }
+  @keyframes stockAlert { 0%,100% { opacity: 1; } 50% { opacity: .85; } }
+
+  .stock-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 999px;
+    font-weight: 900; font-size: 14px;
+  }
+  .stock-badge.normal { background: #dbeafe; color: #1d4ed8; }
+  .stock-badge.low { background: #fee2e2; color: #be123c; }
+  .stock-badge.critical { background: #dc2626; color: #fff; }
+
+  /* ✅ بطاقة المقارنة الشهرية */
+  .month-compare-card {
+    background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+    border: 2px solid #d8b4fe; border-radius: 18px;
+    padding: 16px; margin-bottom: 16px;
+  }
+  .dark .month-compare-card {
+    background: linear-gradient(135deg, rgba(88,28,135,0.3), rgba(107,33,168,0.2));
+    border-color: rgba(168,85,247,0.5);
+  }
+  .trend-up { color: #16a34a; }
+  .trend-down { color: #dc2626; }
+  .trend-equal { color: #64748b; }
+
+  /* ✅ إشعارات Push */
+  .push-notification {
+    position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #fff; padding: 14px 24px; border-radius: 16px;
+    font-weight: 800; font-size: 14px;
+    box-shadow: 0 12px 32px rgba(99,102,241,0.4);
+    z-index: 99999; display: flex; align-items: center; gap: 10px;
+    animation: slideDownIn 0.4s ease; max-width: 90vw;
+  }
+  @keyframes slideDownIn {
+    from { opacity: 0; transform: translate(-50%, -30px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  /* ✅ تنبيه الرايش غير الطبيعي */
+  .anomaly-alert {
+    position: fixed; top: 60px; right: 20px;
+    background: linear-gradient(135deg, #F59E0B, #EA580C);
+    color: #fff; padding: 14px 22px; border-radius: 14px;
+    font-weight: 800; font-size: 13px;
+    box-shadow: 0 12px 32px rgba(245,158,11,0.4);
+    z-index: 99999; display: flex; align-items: center; gap: 10px;
+    animation: slideInRight 0.4s ease; max-width: 90vw;
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col">
+
+<!-- شريط المرور -->
+<div class="marquee-container">
+  <div class="marquee-content">
+    <span>مرحباً بكم في نظام مخزون الفحم - مصنع الريس لإنتاج وتوزيع الفحم</span>
+    <span>نظام إدارة متكامل برعاية وائل محمد</span>
+    <span>للتواصل والإستفسار: 0775880323</span>
+    <span>جميع الحقوق محفوظة © شركة الريس 2026</span>
+  </div>
+</div>
+
+<div id="loadingScreen" class="fixed inset-0 bg-white dark:bg-slate-900 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
+  <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+  <h2 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">جاري التحميل...</h2>
+</div>
+
+<!-- ==================== شاشة تسجيل الدخول ==================== -->
+<div id="loginScreen" class="flex-1 flex items-center justify-center p-4 hidden login-bg">
+  <div class="login-card relative z-10 animate-fade-up">
+    <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4 overflow-hidden">
+      <img src="images/logo1.png" alt="شعار" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-fire text-4xl text-white\'></i>'">
+    </div>
+    <h1 class="text-white text-2xl font-black mb-1">مخزون الفحم</h1>
+    <p class="text-white/60 text-sm font-bold mb-6">مصنع الريس لإنتاج وتوزيع الفحم</p>
+
+    <div class="relative mb-4">
+      <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور"
+             class="w-full bg-black/30 text-white border border-white/15 rounded-xl px-4 py-3 pl-12 text-center font-bold text-lg tracking-widest outline-none focus:border-indigo-400"
+             style="background: rgba(0,0,0,0.3) !important; color:#fff !important;">
+      <button onclick="togglePassword('loginPassword','eyeIcon')" class="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white">
+        <i id="eyeIcon" class="fa-solid fa-eye"></i>
+      </button>
+    </div>
+
+    <button id="btnLogin" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-600/30">
+      تسجيل الدخول <i class="fa-solid fa-arrow-left mr-2"></i>
+    </button>
+
+    <p id="loginError" class="text-red-400 font-bold text-sm mt-4 hidden">
+      <i class="fa-solid fa-circle-exclamation"></i> كلمة المرور غير صحيحة
+    </p>
+    <p class="text-white/30 text-xs mt-6 font-bold">تطوير: وائل محمد</p>
+  </div>
+</div>
+
+<!-- ==================== التطبيق ==================== -->
+<div id="dashboardScreen" class="flex h-screen overflow-hidden hidden">
+
+  <aside id="sidebar" class="fixed md:relative inset-y-0 right-0 z-40 w-72 bg-white/95 dark:bg-slate-800/95 backdrop-blur border-l border-slate-200 dark:border-slate-700 flex flex-col shadow-2xl md:shadow-none">
+    <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center gap-3">
+      <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 overflow-hidden">
+        <img src="images/logo1.png" alt="شعار" class="w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\'fa-solid fa-fire text-xl\'></i>'">
+      </div>
+      <div>
+        <h2 class="font-black text-lg">مصنع الريس</h2>
+        <p class="text-xs text-slate-500 font-bold">مخزون الفحم</p>
+      </div>
+    </div>
+
+    <div class="p-3 flex-1 overflow-y-auto space-y-1.5">
+      <p class="text-[10px] font-black text-slate-400 px-3 pt-2 pb-1 tracking-wider">الرئيسية</p>
+      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 transition-colors text-sm">
+        <i class="fa-solid fa-chart-pie w-5 text-center"></i> لوحة التحكم
+      </button>
+
+      <p class="text-[10px] font-black text-slate-400 px-3 pt-3 pb-1 tracking-wider">السجل</p>
+      <button onclick="switchTab('current')" id="tab-current" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-sm">
+        <i class="fa-solid fa-list w-5 text-center text-amber-500"></i> السجل الحالي
+      </button>
+      <button onclick="switchTab('archive')" id="tab-archive" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-sm">
+        <i class="fa-solid fa-box-archive w-5 text-center text-emerald-500"></i> الأرشيف
+      </button>
+
+      <p class="text-[10px] font-black text-slate-400 px-3 pt-3 pb-1 tracking-wider">الحساب</p>
+      <button onclick="switchTab('settings')" id="tab-settings" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-sm">
+        <i class="fa-solid fa-gear w-5 text-center"></i> الإعدادات
+      </button>
+    </div>
+
+    <div class="p-4 border-t border-slate-200 dark:border-slate-700">
+      <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative">
+    <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-4 flex justify-between items-center shrink-0">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="md:hidden text-2xl text-slate-600 dark:text-slate-300"><i class="fa-solid fa-bars"></i></button>
+        <h1 id="headerName" class="font-black text-xl text-slate-800 dark:text-white">مخزون الفحم الجاهز</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          <span id="syncDot" class="sync-dot offline"></span>
+          <span id="syncLabel" class="text-xs font-bold text-slate-600 dark:text-slate-300 hidden sm:inline">غير متصل</span>
+          <button onclick="syncNow()" title="مزامنة الآن" class="text-indigo-500 hover:text-indigo-700 px-1">
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-yellow-400">
+          <i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-4 md:p-6">
+
+      <!-- ================================================ -->
+      <!-- قسم 1: لوحة التحكم -->
+      <!-- ================================================ -->
+      <div id="content-dashboard" class="animate-fade-up">
+
+        <!-- بطاقات الإحصائيات -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div class="stat-card">
+            <div class="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1"><i class="fa-solid fa-box text-emerald-500"></i> كراتين اليوم</div>
+            <div class="text-2xl font-black text-emerald-600" id="statCartons">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1"><i class="fa-solid fa-weight-hanging text-indigo-500"></i> الوزن الكلي</div>
+            <div class="text-2xl font-black text-indigo-600" id="statWeight">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1"><i class="fa-solid fa-recycle text-rose-500"></i> الرايش (كغ)</div>
+            <div class="text-2xl font-black text-rose-600" id="statSawdust">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="text-slate-500 dark:text-slate-400 font-bold text-xs mb-1"><i class="fa-solid fa-list-ol text-amber-500"></i> سجلات اليوم</div>
+            <div class="text-2xl font-black text-amber-600" id="statRecords">0</div>
+          </div>
+        </div>
+
+        <!-- ✅ بطاقة مخزون الفحم الخام -->
+        <div id="rawStockCard" class="stock-card">
+          <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+            <h4 class="font-black text-lg text-blue-700 dark:text-blue-300 flex items-center gap-2">
+              <i class="fa-solid fa-boxes-packing"></i> مخزون الفحم الخام
+            </h4>
+            <span id="stockStatusBadge" class="stock-badge normal">
+              <i class="fa-solid fa-check-circle"></i> <span id="stockStatusText">طبيعي</span>
+            </span>
+          </div>
+          <div class="grid grid-cols-3 gap-3 mb-3">
+            <div class="bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-bold text-blue-600 dark:text-blue-400">📥 المستلم</div>
+              <div id="stockReceived" class="text-xl font-black text-blue-700 dark:text-blue-300">0 كغ</div>
+            </div>
+            <div class="bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-bold text-amber-600 dark:text-amber-400">📤 المستهلك</div>
+              <div id="stockConsumed" class="text-xl font-black text-amber-700 dark:text-amber-300">0 كغ</div>
+            </div>
+            <div class="bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 text-center border-2 border-blue-300 dark:border-blue-700">
+              <div class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">📦 المتبقي</div>
+              <div id="stockRemaining" class="text-xl font-black text-indigo-700 dark:text-indigo-300">0 كغ</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div class="md:col-span-2">
+              <input id="rawStockInput" type="number" step="0.1" placeholder="الكمية المستلمة (كغ)"
+                     class="w-full bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-700 rounded-xl px-3 py-2 outline-none focus:border-blue-500 font-bold text-sm">
+            </div>
+            <button onclick="addRawStock()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl shadow-lg shadow-blue-600/30 transition-colors text-sm">
+              <i class="fa-solid fa-plus ml-1"></i> إضافة استلام
+            </button>
+          </div>
+          <div id="stockHistoryList" class="mt-3 space-y-1.5 max-h-32 overflow-y-auto">
+            <p class="text-slate-400 text-center py-2 text-xs">لا توجد حركات مخزون</p>
+          </div>
+        </div>
+
+        <!-- ✅ بطاقة المقارنة الشهرية -->
+        <div class="month-compare-card">
+          <h4 class="font-black text-lg text-purple-700 dark:text-purple-300 flex items-center gap-2 mb-3">
+            <i class="fa-solid fa-chart-line"></i> مقارنة الإنتاج الشهري
+          </h4>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-600 dark:text-slate-400" id="currentMonthLabel">الشهر الحالي</div>
+              <div id="currentMonthTotal" class="text-xl font-black text-purple-700 dark:text-purple-300">0</div>
+            </div>
+            <div class="bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 text-center">
+              <div class="text-[10px] font-bold text-slate-600 dark:text-slate-400" id="prevMonthLabel">الشهر السابق</div>
+              <div id="prevMonthTotal" class="text-xl font-black text-slate-600 dark:text-slate-400">0</div>
+            </div>
+            <div class="bg-white/70 dark:bg-slate-800/70 rounded-xl p-3 text-center col-span-2 md:col-span-1">
+              <div class="text-[10px] font-bold text-slate-600 dark:text-slate-400">📊 التغيير</div>
+              <div id="monthTrend" class="text-xl font-black trend-equal">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- قسم الإنتاج -->
+        <div id="productionSection" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/50 overflow-hidden mb-4">
+          <div class="p-4 border-b border-emerald-100 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-900/10 flex justify-between items-center flex-wrap gap-2">
+            <h4 class="font-black text-lg text-emerald-700 dark:text-emerald-400"><i class="fa-solid fa-box-open ml-2"></i> إنتاج اليوم (الكراتين)</h4>
+            <div class="flex items-center gap-2">
+              <span id="dailyProdCount" class="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs font-black px-2.5 py-1 rounded-full">0</span>
+              <button onclick="exportSection('production')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow transition-colors" title="حفظ القسم كصورة">
+                <i class="fa-solid fa-camera"></i> صورة
+              </button>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-fire text-emerald-500"></i> نوع الفحم</label>
+                <select id="dailyCharType" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>سداسي 24</option><option>سداسي 22</option>
+                  <option>جامبو طويل</option><option>جامبو قصير</option>
+                  <option>جامبو جديد</option>
+                  <option>مشرنف 22</option><option>مشرنف 24</option>
+                  <option>عجمي 22</option><option>عجمي 24</option>
+                  <option>اسطواني 24</option><option>اسطواني 22</option>
+                  <option>مربع 26</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-box text-emerald-500"></i> نوع الكرتونة</label>
+                <select id="dailyCartonType" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>5 كيلو</option>
+                  <option>10 كيلو</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-weight-scale text-emerald-500"></i> وزن الكرتونة (كغ)</label>
+                <input id="dailyCartonWeight" type="number" step="0.1" placeholder="5.2" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-bold text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-cubes text-emerald-500"></i> عدد الإنتاج</label>
+                <input id="dailyCount" type="number" placeholder="120" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-bold text-sm">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-user-check text-emerald-500"></i> مسؤول التعبئة</label>
+              <select id="dailyOfficer" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-bold text-sm">
+                <option value="">-- اختر --</option>
+                <option>قيس</option><option>عبد الرحمن</option><option>وائل</option><option>وليد الزعبي</option>
+              </select>
+            </div>
+            <button onclick="saveDailyProduction()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-emerald-600/30 transition-colors text-sm">
+              <i class="fa-solid fa-plus ml-1"></i> حفظ الإنتاج
+            </button>
+
+            <!-- ✅ زر التسجيل الصوتي -->
+            <button id="charVoiceBtn" class="voice-btn idle" onclick="toggleRecording('char')">
+              <i class="fa-solid fa-microphone"></i> تسجيل ملاحظة صوتية
+            </button>
+            <div id="charVoicePreview"></div>
+
+            <div id="dailyProdList" class="mt-4 space-y-2.5 max-h-[500px] overflow-y-auto pl-1">
+              <p class="text-slate-400 text-center py-3 text-xs">لا توجد سجلات اليوم</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- قسم الرايش -->
+        <div id="sawdustSection" class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-2xl shadow-sm border border-rose-100 dark:border-rose-900/50 overflow-hidden mb-4">
+          <div class="p-4 border-b border-rose-100 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-900/10 flex justify-between items-center flex-wrap gap-2">
+            <h4 class="font-black text-lg text-rose-700 dark:text-rose-400"><i class="fa-solid fa-recycle ml-2"></i> الرايش المرتجع</h4>
+            <div class="flex items-center gap-2">
+              <span id="sawdustCount" class="bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 text-xs font-black px-2.5 py-1 rounded-full">0</span>
+              <button onclick="exportSection('sawdust')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow transition-colors" title="حفظ القسم كصورة">
+                <i class="fa-solid fa-camera"></i> صورة
+              </button>
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-fire text-rose-500"></i> نوع الفحم</label>
+                <select id="sawdustCharType" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-rose-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>سداسي 24</option><option>سداسي 22</option>
+                  <option>جامبو طويل</option><option>جامبو قصير</option>
+                  <option>مشرنف 22</option><option>مشرنف 24</option>
+                  <option>عجمي 22</option><option>عجمي 24</option>
+                  <option>اسطواني 24</option><option>اسطواني 22</option>
+                  <option>مربع 26</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-weight-hanging text-rose-500"></i> وزن المرتجع (كغ)</label>
+                <input id="sawdustWeight" type="number" step="0.1" placeholder="50" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-rose-500 font-bold text-sm">
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-user text-rose-500"></i> المسؤول</label>
+                <select id="sawdustOfficer" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-rose-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>قيس</option><option>عبد الرحمن</option><option>وائل</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300"><i class="fa-solid fa-note-sticky text-rose-500"></i> ملاحظة</label>
+                <input id="sawdustNote" type="text" placeholder="اختياري" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-rose-500 font-bold text-sm">
+              </div>
+            </div>
+            <button onclick="saveSawdust()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-rose-600/30 transition-colors text-sm">
+              <i class="fa-solid fa-plus ml-1"></i> حفظ الرايش
+            </button>
+
+            <!-- ✅ زر التسجيل الصوتي -->
+            <button id="sawdustVoiceBtn" class="voice-btn idle" onclick="toggleRecording('sawdust')">
+              <i class="fa-solid fa-microphone"></i> تسجيل ملاحظة صوتية
+            </button>
+            <div id="sawdustVoicePreview"></div>
+
+            <div id="sawdustList" class="mt-4 space-y-2.5 max-h-[500px] overflow-y-auto pl-1">
+              <p class="text-slate-400 text-center py-3 text-xs">لا توجد سجلات اليوم</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- تصدير التقرير الشامل -->
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-2xl shadow-sm border border-purple-100 dark:border-purple-900/50 overflow-hidden">
+          <div class="p-4 border-b border-purple-100 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-900/10">
+            <h4 class="font-black text-lg text-purple-700 dark:text-purple-400"><i class="fa-solid fa-camera ml-2"></i> تصدير تقرير اليوم الشامل</h4>
+          </div>
+          <div class="p-5">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3 text-center font-bold">تقرير شامل (إنتاج + رايش) كصورة PNG واحدة</p>
+            <button onclick="exportDailyReport()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-purple-600/30 transition-colors">
+              <i class="fa-solid fa-camera ml-1"></i> تحميل التقرير الشامل PNG
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================ -->
+      <!-- قسم 2: السجل الحالي -->
+      <!-- ================================================ -->
+      <div id="content-current" class="animate-fade-up hidden">
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-2xl shadow-sm border border-amber-100 dark:border-amber-900/50 overflow-hidden mb-4">
+          <div class="p-4 border-b border-amber-100 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-900/10">
+            <h4 class="font-black text-lg text-amber-700 dark:text-amber-400"><i class="fa-solid fa-plus-circle ml-2"></i> إضافة سجل جديد</h4>
+          </div>
+          <div class="p-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300">اسم المسؤول (المُسلِّم)</label>
+                <select id="senderName" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-amber-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>قيس</option><option>عبد الرحمن</option><option>وائل محمد</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300">نوع الفحم</label>
+                <select id="charType" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-amber-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>سداسي 24</option><option>سداسي 22</option>
+                  <option>جامبو طويل</option><option>جامبو قصير</option>
+                  <option>مشرنف 22</option><option>مشرنف 24</option>
+                  <option>عجمي 22</option><option>عجمي 24</option>
+                  <option>اسطواني 24</option><option>اسطواني 22</option>
+                  <option>مربع 26</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300">الكرتونة</label>
+                <select id="charCarton" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-amber-500 font-bold text-sm">
+                  <option value="">-- اختر --</option>
+                  <option>5 كيلو</option><option>10 كيلو</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300">العدد</label>
+                <input id="charCount" type="number" placeholder="100" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-amber-500 font-bold text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300">الوزن (كغ)</label>
+                <input id="charWeight" type="number" step="0.1" placeholder="500" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-amber-500 font-bold text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-bold mb-1.5 text-slate-600 dark:text-slate-300">اسم المستلم</label>
+                <input id="charReceiver" type="text" placeholder="اسم المستلم" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-amber-500 font-bold text-sm">
+              </div>
+            </div>
+            <button onclick="addRecord()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-amber-600/30 transition-colors text-sm">
+              <i class="fa-solid fa-plus ml-1"></i> إضافة السجل
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+          <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 flex justify-between items-center flex-wrap gap-2">
+            <h4 class="font-black text-lg flex items-center gap-2">
+              <i class="fa-solid fa-list text-indigo-500"></i> السجل الحالي
+              <span id="recordCount" class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">0</span>
+            </h4>
+            <button onclick="exportTable()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/30 transition-colors">
+              <i class="fa-solid fa-camera ml-1"></i> حفظ كصورة
+            </button>
+          </div>
+          <div class="p-4">
+            <div class="search-bar mb-3">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input id="searchInput" type="text" placeholder="ابحث في السجلات..." oninput="renderCurrent()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 font-bold text-sm outline-none focus:border-indigo-500">
+            </div>
+            <div class="flex flex-wrap gap-2 mb-3" id="filterChips">
+              <button class="filter-chip active" data-filter="all" onclick="setFilter('all', this)">الكل</button>
+              <button class="filter-chip" data-filter="5" onclick="setFilter('5', this)">5 كيلو</button>
+              <button class="filter-chip" data-filter="10" onclick="setFilter('10', this)">10 كيلو</button>
+              <button class="filter-chip" data-filter="قيس" onclick="setFilter('قيس', this)">مسؤول: قيس</button>
+              <button class="filter-chip" data-filter="عبد الرحمن" onclick="setFilter('عبد الرحمن', this)">مسؤول: عبد الرحمن</button>
+              <button class="filter-chip" data-filter="وائل" onclick="setFilter('وائل', this)">مسؤول: وائل</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-center text-sm">
+                <thead class="bg-slate-50/50 dark:bg-slate-900/30 text-slate-500 dark:text-slate-400 font-bold text-xs">
+                  <tr>
+                    <th class="p-3">#</th>
+                    <th class="p-3">نوع الفحم</th>
+                    <th class="p-3">الكرتونة</th>
+                    <th class="p-3">العدد</th>
+                    <th class="p-3">الوزن</th>
+                    <th class="p-3">المستلم</th>
+                    <th class="p-3">المسؤول</th>
+                    <th class="p-3">إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-slate-700 font-bold"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================ -->
+      <!-- قسم 3: الأرشيف -->
+      <!-- ================================================ -->
+      <div id="content-archive" class="animate-fade-up hidden">
+        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+          <div class="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 flex justify-between items-center flex-wrap gap-2">
+            <h4 class="font-black text-lg flex items-center gap-2">
+              <i class="fa-solid fa-box-archive text-emerald-500"></i> المحفوظات (الأرشيف)
+            </h4>
+            <button onclick="archiveCurrent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-emerald-600/30 transition-colors">
+              <i class="fa-solid fa-save ml-1"></i> حفظ السجل الحالي
+            </button>
+          </div>
+          <div class="p-4">
+            <div id="archiveContainer" class="space-y-4">
+              <p class="text-center text-slate-400 font-bold py-4">لا توجد محفوظات بعد.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================ -->
+      <!-- قسم 4: الإعدادات -->
+      <!-- ================================================ -->
+      <div id="content-settings" class="animate-fade-up hidden">
+        <div class="max-w-2xl mx-auto space-y-4">
+          <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <h4 class="font-black text-lg mb-4 border-b pb-2 dark:border-slate-700"><i class="fa-solid fa-cloud text-indigo-500 ml-2"></i> حالة المزامنة السحابية</h4>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-bold text-sm">حالة الاتصال</span>
+                <div class="flex items-center gap-2">
+                  <span id="syncDotSettings" class="sync-dot offline"></span>
+                  <span id="syncLabelSettings" class="font-black text-sm">غير متصل</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-bold text-sm">آخر مزامنة</span>
+                <span id="lastSyncText" class="font-black text-sm">-</span>
+              </div>
+              <button onclick="syncNow()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-colors text-sm">
+                <i class="fa-solid fa-rotate ml-1"></i> مزامنة الآن
+              </button>
+            </div>
+          </div>
+
+          <!-- ✅ الإشعارات -->
+          <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <h4 class="font-black text-lg mb-4 border-b pb-2 dark:border-slate-700"><i class="fa-solid fa-bell text-amber-500 ml-2"></i> الإشعارات</h4>
+            <button onclick="requestNotificationPermission()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl shadow-lg transition-colors text-sm">
+              <i class="fa-solid fa-bell ml-1"></i> تفعيل إشعارات المتصفح
+            </button>
+            <p class="text-xs text-slate-500 mt-2 text-center">ستتلقى إشعاراً عند إضافة سجل جديد</p>
+          </div>
+
+          <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <h4 class="font-black text-lg mb-4 border-b pb-2 dark:border-slate-700"><i class="fa-solid fa-info-circle text-blue-500 ml-2"></i> معلومات النظام</h4>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-bold text-sm">اسم النظام</span>
+                <span class="font-black text-sm">مخزون الفحم - مصنع الريس</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-bold text-sm">الإصدار</span>
+                <span class="font-black text-sm">3.0.0</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-bold text-sm">المطور</span>
+                <span class="font-black text-sm text-indigo-600">وائل محمد</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-500 font-bold text-sm">التخزين المحلي</span>
+                <span class="font-black text-sm"><span id="storageSize">-</span> KB</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 rounded-2xl shadow-sm border border-red-100 dark:border-red-900/50">
+            <h4 class="font-black text-lg mb-4 border-b pb-2 dark:border-slate-700 text-red-600 dark:text-red-400"><i class="fa-solid fa-triangle-exclamation ml-2"></i> إدارة البيانات</h4>
+            <div class="space-y-3">
+              <button onclick="exportAllData()" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl shadow-lg transition-colors text-sm">
+                <i class="fa-solid fa-download ml-1"></i> تصدير كل البيانات JSON
+              </button>
+              <button onclick="clearAllData()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow-lg transition-colors text-sm">
+                <i class="fa-solid fa-trash ml-1"></i> مسح كل البيانات نهائياً
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 text-center">
+            <h4 class="font-black text-lg mb-4 border-b pb-2 dark:border-slate-700"><i class="fa-solid fa-code text-purple-500 ml-2"></i> عن المطور</h4>
+            <div class="animated-dev-text mb-3">الجمهورية العربية السورية</div>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+              تم تطوير هذا النظام بواسطة <b class="text-indigo-600">وائل محمد</b><br>
+              مصنع الريس لإنتاج وتوزيع الفحم
+            </p>
+            <div class="flex justify-center gap-3 flex-wrap">
+              <a href="https://wa.me/962779966565" target="_blank" class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 hover:bg-emerald-100 transition-colors">
+                <i class="fa-brands fa-whatsapp"></i>
+              </a>
+              <a href="https://www.facebook.com/wwwwwwwwwwwwwwwwwwwwwv" target="_blank" class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 hover:bg-blue-100 transition-colors">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+              <a href="https://www.instagram.com/wael_mohammed2002/" target="_blank" class="w-10 h-10 rounded-full bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 hover:bg-pink-100 transition-colors">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a href="https://t.me/wael_mohammed" target="_blank" class="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center text-sky-600 hover:bg-sky-100 transition-colors">
+                <i class="fa-brands fa-telegram"></i>
+              </a>
+            </div>
+            <div class="mt-4 text-xs font-bold text-slate-400 border-t pt-3 border-slate-200 dark:border-slate-700">
+              جميع الحقوق محفوظة © وائل محمد 2026
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="text-center py-3 text-slate-400 text-xs font-bold shrink-0">
+      جميع الحقوق محفوظة © مصنع الريس 2026 | تطوير: وائل محمد
+    </footer>
+  </main>
+</div>
+
+<!-- قوالب التصدير -->
+<div id="exportTemplate"><div id="exportContent" style="position:relative;"></div></div>
+<div id="dailyExportTemplate"><div id="dailyExportContent" style="position:relative;"></div></div>
+<div id="prodExportTemplate"><div id="prodExportContent" style="position:relative;"></div></div>
+<div id="sawdustExportTemplate"><div id="sawdustExportContent" style="position:relative;"></div></div>
+<div id="toastContainer" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99999] flex flex-col gap-2 pointer-events-none"></div>
+
+<script>
+/* ================================================================
+   الإعدادات
+   ================================================================ */
+const PASSWORD = 'تعبئة';
+const STORAGE_KEY = 'alrays_charcoal_stock';
+const SYNC_CONFIG = {
+  enabled: true,
+  endpoint: 'https://your-server.com/api/charcoal',
+  apiKey: 'YOUR_API_KEY',
+  intervalMs: 30000
+};
+const STOCK_MIN_THRESHOLD = 100;
+const STOCK_CRITICAL_THRESHOLD = 30;
+
+let currentRecords  = JSON.parse(localStorage.getItem(STORAGE_KEY + '_current'))  || [];
+let archiveRecords  = JSON.parse(localStorage.getItem(STORAGE_KEY + '_archive'))  || [];
+let dailyProduction = JSON.parse(localStorage.getItem(STORAGE_KEY + '_daily'))    || [];
+let sawdustRecords  = JSON.parse(localStorage.getItem(STORAGE_KEY + '_sawdust'))  || [];
+let rawStockMovements = JSON.parse(localStorage.getItem(STORAGE_KEY + '_rawstock')) || [];
+let activeFilter = 'all';
+let isSyncing = false;
+let syncTimer = null;
+let pendingCharVoice = null;
+let pendingSawdustVoice = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let recordingTarget = null;
+let stockAlertShown = { low: false, critical: false };
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY + '_current',  JSON.stringify(currentRecords));
+  localStorage.setItem(STORAGE_KEY + '_archive',  JSON.stringify(archiveRecords));
+  localStorage.setItem(STORAGE_KEY + '_daily',    JSON.stringify(dailyProduction));
+  localStorage.setItem(STORAGE_KEY + '_sawdust',  JSON.stringify(sawdustRecords));
+  localStorage.setItem(STORAGE_KEY + '_rawstock', JSON.stringify(rawStockMovements));
+  updateStorageSize();
+}
+
+function updateStorageSize() {
+  let total = 0;
+  for (let key in localStorage) {
+    if (localStorage.hasOwnProperty(key) && key.startsWith(STORAGE_KEY)) {
+      total += localStorage[key].length;
+    }
+  }
+  const el = document.getElementById('storageSize');
+  if (el) el.textContent = (total / 1024).toFixed(1);
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'bg-slate-900 text-white px-6 py-3 rounded-xl font-bold shadow-2xl transition-all duration-300 transform translate-y-10 opacity-0 text-sm pointer-events-auto';
+  t.innerHTML = msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => t.classList.remove('translate-y-10', 'opacity-0'), 10);
+  setTimeout(() => { t.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+  else { input.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+}
+
+function toggleDarkMode() {
+  document.documentElement.classList.toggle('dark');
+  localStorage.setItem('stock_dark', document.documentElement.classList.contains('dark'));
+}
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ================================================================
+   التبويبات
+   ================================================================ */
+function switchTab(tabId) {
+  ['dashboard', 'current', 'archive', 'settings'].forEach(id => {
+    const content = document.getElementById('content-' + id);
+    if(content) content.classList.add('hidden');
+    const btn = document.getElementById('tab-' + id);
+    if(btn) btn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors text-sm";
+  });
+
+  const activeContent = document.getElementById('content-' + tabId);
+  if(activeContent) {
+    activeContent.classList.remove('hidden');
+    activeContent.classList.add('animate-fade-up');
+  }
+  const activeBtn = document.getElementById('tab-' + tabId);
+  if(activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl font-bold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 transition-colors text-sm";
+
+  if (tabId === 'settings') { updateStorageSize(); updateLastSyncText(); }
+  if (window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+/* ================================================================
+   تسجيل الدخول
+   ================================================================ */
+function handleLogin() {
+  const pass = document.getElementById('loginPassword').value;
+  if (pass === PASSWORD) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('dashboardScreen').classList.remove('hidden');
+    renderCurrent();
+    renderArchive();
+    renderSawdustList();
+    renderDailyList();
+    renderDailyTotals();
+    renderStockCard();
+    renderMonthComparison();
+    initSync();
+    switchTab('dashboard');
+  } else {
+    document.getElementById('loginError').classList.remove('hidden');
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  }
+}
+function logout() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('dashboardScreen').classList.add('hidden');
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').classList.add('hidden');
+}
+window.addEventListener('load', function() {
+  const loader = document.getElementById('loadingScreen');
+  if (loader) loader.style.display = 'none';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  if (localStorage.getItem('stock_dark') === 'true') document.documentElement.classList.add('dark');
+  const btn = document.getElementById('btnLogin');
+  const input = document.getElementById('loginPassword');
+  if (btn) btn.onclick = handleLogin;
+  if (input) { input.onkeypress = e => { if (e.key === 'Enter') handleLogin(); }; input.focus(); }
+});
+
+/* ================================================================
+   البحث والفلترة
+   ================================================================ */
+function setFilter(value, btn) {
+  activeFilter = value;
+  document.querySelectorAll('#filterChips .filter-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderCurrent();
+}
+function getFilteredRecords() {
+  const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+  return currentRecords.filter(r => {
+    if (activeFilter !== 'all') {
+      if (activeFilter === '5' && !r.carton.includes('5')) return false;
+      if (activeFilter === '10' && !r.carton.includes('10')) return false;
+      if (['قيس','عبد الرحمن','وائل'].includes(activeFilter)) {
+        if (!(r.sender || '').includes(activeFilter)) return false;
+      }
+    }
+    if (q) {
+      const hay = [r.type, r.carton, r.count, r.weight, r.receiver, r.sender, r.date].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ================================================================
+   السجل الحالي
+   ================================================================ */
+function addRecord() {
+  const type = document.getElementById('charType').value;
+  const carton = document.getElementById('charCarton').value;
+  const count = document.getElementById('charCount').value;
+  const weight = document.getElementById('charWeight').value;
+  const receiver = document.getElementById('charReceiver').value;
+  const sender = document.getElementById('senderName').value;
+  if (!type || !carton || !count || !weight || !receiver || !sender) return showToast('❌ املأ جميع الحقول');
+  currentRecords.push({ id: Date.now().toString(), type, carton, count, weight, receiver, sender, date: new Date().toISOString().slice(0,10) });
+  saveData(); renderCurrent();
+  ['charType','charCarton','charCount','charWeight','charReceiver'].forEach(id => document.getElementById(id).value = '');
+  showToast('✅ تمت الإضافة');
+  scheduleSync();
+}
+function renderCurrent() {
+  const tbody = document.getElementById('tableBody');
+  if (!tbody) return;
+  const list = getFilteredRecords();
+  tbody.innerHTML = '';
+  document.getElementById('recordCount').textContent = currentRecords.length;
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-slate-400">${currentRecords.length === 0 ? 'لا توجد سجلات' : 'لا توجد نتائج'}</td></tr>`;
+    return;
+  }
+  list.forEach((r, i) => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+        <td class="p-3 text-slate-400">${i+1}</td>
+        <td class="p-3">${r.type}</td>
+        <td class="p-3">${r.carton}</td>
+        <td class="p-3 text-emerald-600">${r.count}</td>
+        <td class="p-3">${r.weight} كغ</td>
+        <td class="p-3">${r.receiver}</td>
+        <td class="p-3 text-indigo-600 text-xs">${r.sender || '-'}</td>
+        <td class="p-3"><button onclick="deleteRecord('${r.id}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash"></i></button></td>
+      </tr>`;
+  });
+}
+function deleteRecord(id) {
+  if (!confirm('حذف هذا السجل؟')) return;
+  currentRecords = currentRecords.filter(r => r.id !== id);
+  saveData(); renderCurrent(); showToast('🗑️ تم الحذف'); scheduleSync();
+}
+
+/* ================================================================
+   الأرشيف — مدموج حسب التاريخ والمسؤول
+   ================================================================ */
+function archiveCurrent() {
+  if (currentRecords.length === 0) return showToast('❌ لا يوجد سجل حالي');
+  const sender = document.getElementById('senderName').value || 'غير محدد';
+  const today = new Date().toLocaleDateString('ar-EG');
+  const existingIndex = archiveRecords.findIndex(a => a.date === today && a.sender === sender);
+
+  if (existingIndex !== -1) {
+    archiveRecords[existingIndex].records.push(...JSON.parse(JSON.stringify(currentRecords)));
+    archiveRecords[existingIndex].lastUpdated = new Date().toISOString();
+  } else {
+    archiveRecords.push({
+      id: Date.now().toString(),
+      date: today, sender,
+      records: JSON.parse(JSON.stringify(currentRecords)),
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
+    });
+  }
+
+  currentRecords = [];
+  saveData(); renderCurrent(); renderArchive();
+  showToast('✅ تم حفظ الأرشيف (مدموج حسب التاريخ)');
+  scheduleSync();
+}
+
+function renderArchive() {
+  const container = document.getElementById('archiveContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  if (archiveRecords.length === 0) {
+    container.innerHTML = '<p class="text-center text-slate-400 font-bold py-4">لا توجد محفوظات بعد.</p>';
+    return;
+  }
+
+  const grouped = {};
+  archiveRecords.forEach(arch => {
+    const key = `${arch.date}__${arch.sender}`;
+    if (!grouped[key]) {
+      grouped[key] = { date: arch.date, sender: arch.sender, ids: [], records: [], lastUpdated: arch.lastUpdated || arch.createdAt || new Date().toISOString() };
+    }
+    grouped[key].ids.push(arch.id);
+    grouped[key].records.push(...arch.records);
+    const archTime = arch.lastUpdated || arch.createdAt;
+    if (archTime && new Date(archTime) > new Date(grouped[key].lastUpdated)) grouped[key].lastUpdated = archTime;
+  });
+
+  const groupedList = Object.values(grouped).sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+
+  groupedList.forEach(group => {
+    let rows = '';
+    group.records.forEach((r, i) => {
+      rows += `<tr class="border-b dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30">
+        <td class="p-2 text-slate-400">${i+1}</td>
+        <td class="p-2 font-bold">${r.type}</td>
+        <td class="p-2">${r.carton}</td>
+        <td class="p-2 font-bold text-emerald-600">${r.count}</td>
+        <td class="p-2">${r.weight} كغ</td>
+        <td class="p-2">${r.receiver}</td>
+      </tr>`;
+    });
+    const totalCount = group.records.reduce((s, r) => s + (Number(r.count) || 0), 0);
+    const totalWeight = group.records.reduce((s, r) => s + (Number(r.weight) || 0), 0);
+    const groupId = group.ids.join(',');
+
+    container.innerHTML += `
+      <div class="border-2 border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+        <div class="bg-gradient-to-l from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900 p-4 flex flex-wrap justify-between items-center gap-3 border-b-2 border-slate-200 dark:border-slate-700">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-lg font-black text-sm">
+              <i class="fa-solid fa-calendar"></i> ${group.date}
+            </div>
+            <div class="flex items-center gap-2 bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-3 py-1.5 rounded-lg font-black text-sm">
+              <i class="fa-solid fa-user"></i> ${group.sender}
+            </div>
+            <div class="flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 rounded-lg font-black text-sm">
+              <i class="fa-solid fa-list-ol"></i> ${group.records.length} سجل
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="exportArchiveGroup('${groupId.replace(/'/g, "\\'")}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 px-3 rounded-lg font-bold shadow transition-colors">
+              <i class="fa-solid fa-camera ml-1"></i> صورة
+            </button>
+            <button onclick="deleteArchiveGroup('${groupId.replace(/'/g, "\\'")}')" class="bg-red-600 hover:bg-red-700 text-white text-xs py-2 px-3 rounded-lg font-bold shadow transition-colors">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-center text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 font-bold">
+              <tr>
+                <th class="p-2">#</th>
+                <th class="p-2">النوع</th>
+                <th class="p-2">الكرتونة</th>
+                <th class="p-2">العدد</th>
+                <th class="p-2">الوزن</th>
+                <th class="p-2">المستلم</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-3 border-t-2 border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-2 text-center text-xs font-black">
+          <div>
+            <div class="text-[10px] text-indigo-600 dark:text-indigo-400">📦 مجموع العدد</div>
+            <div class="text-lg text-indigo-700 dark:text-indigo-300">${totalCount}</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-amber-600 dark:text-amber-400">⚖️ مجموع الوزن</div>
+            <div class="text-lg text-amber-700 dark:text-amber-300">${totalWeight.toFixed(1)} كغ</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-emerald-600 dark:text-emerald-400">📋 عدد السجلات</div>
+            <div class="text-lg text-emerald-700 dark:text-emerald-300">${group.records.length}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+}
+
+function deleteArchiveGroup(idsString) {
+  const ids = idsString.split(',');
+  if (!confirm(`هل تريد حذف أرشيف "${ids.length}" بطاقة بنفس التاريخ؟`)) return;
+  archiveRecords = archiveRecords.filter(a => !ids.includes(a.id));
+  saveData(); renderArchive();
+  showToast('🗑️ تم حذف الأرشيف');
+  scheduleSync();
+}
+
+async function exportArchiveGroup(idsString) {
+  const ids = idsString.split(',');
+  const groups = archiveRecords.filter(a => ids.includes(a.id));
+  if (groups.length === 0) return;
+  const date = groups[0].date;
+  const sender = groups[0].sender;
+  const allRecords = groups.flatMap(g => g.records);
+  document.getElementById('exportContent').innerHTML = buildReportHTML(allRecords, sender, date);
+  injectWatermark('exportContent');
+  showToast('جاري الحفظ...');
+  await captureElement('exportTemplate', `أرشيف_${date.replace(/\//g, '-')}_${sender}.png`);
+  showToast('✅ تم الحفظ');
+}
+
+/* ================================================================
+   ✅ 1. التسجيل الصوتي
+   ================================================================ */
+async function toggleRecording(target) {
+  const btnId = target === 'char' ? 'charVoiceBtn' : 'sawdustVoiceBtn';
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    recordingTarget = target;
+
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const base64 = await blobToBase64(blob);
+      if (target === 'char') pendingCharVoice = base64;
+      else pendingSawdustVoice = base64;
+      updateVoiceButton(target, 'has-recording');
+      renderVoicePreview(target, base64);
+      showToast('🎤 تم التسجيل');
+    };
+
+    mediaRecorder.start();
+    updateVoiceButton(target, 'recording');
+    showToast('🔴 جاري التسجيل... اضغط للإيقاف');
+  } catch (err) {
+    showToast('❌ لا يمكن الوصول للميكروفون');
+    console.error(err);
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+function updateVoiceButton(target, state) {
+  const btnId = target === 'char' ? 'charVoiceBtn' : 'sawdustVoiceBtn';
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  if (state === 'recording') {
+    btn.className = 'voice-btn recording';
+    btn.innerHTML = '<i class="fa-solid fa-stop"></i> إيقاف التسجيل';
+  } else if (state === 'has-recording') {
+    btn.className = 'voice-btn has-recording';
+    btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تم التسجيل — اضغط لإعادة التسجيل';
+  } else {
+    btn.className = 'voice-btn idle';
+    btn.innerHTML = '<i class="fa-solid fa-microphone"></i> تسجيل ملاحظة صوتية';
+  }
+}
+
+function renderVoicePreview(target, base64) {
+  const containerId = target === 'char' ? 'charVoicePreview' : 'sawdustVoicePreview';
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (!base64) { container.innerHTML = ''; return; }
+  container.innerHTML = `
+    <div class="voice-player">
+      <audio controls src="${base64}"></audio>
+      <button class="voice-delete" onclick="deleteVoice('${target}')">
+        <i class="fa-solid fa-trash text-xs"></i>
+      </button>
+    </div>
+  `;
+}
+
+function deleteVoice(target) {
+  if (target === 'char') {
+    pendingCharVoice = null;
+    renderVoicePreview('char', null);
+    updateVoiceButton('char', 'idle');
+  } else {
+    pendingSawdustVoice = null;
+    renderVoicePreview('sawdust', null);
+    updateVoiceButton('sawdust', 'idle');
+  }
+}
+
+/* ================================================================
+   ✅ 2. إشعارات Push
+   ================================================================ */
+function sendPushNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try { new Notification(title, { body, icon: 'images/logo1.png' }); } catch(e) {}
+  }
+  const n = document.createElement('div');
+  n.className = 'push-notification';
+  n.innerHTML = `<i class="fa-solid fa-bell text-xl"></i><div><div style="font-size: 13px;">${title}</div><div style="font-size: 11px; opacity: 0.9;">${body}</div></div>`;
+  document.body.appendChild(n);
+  setTimeout(() => {
+    n.style.transition = 'opacity 0.3s, transform 0.3s';
+    n.style.opacity = '0';
+    n.style.transform = 'translate(-50%, -30px)';
+    setTimeout(() => n.remove(), 300);
+  }, 4000);
+}
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) return showToast('❌ المتصفح لا يدعم الإشعارات');
+  if (Notification.permission === 'granted') return showToast('✅ الإشعارات مفعّلة مسبقاً');
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+    showToast('✅ تم تفعيل الإشعارات');
+    sendPushNotification('🔔 إشعارات مفعّلة', 'ستتلقى إشعاراً عند إضافة سجل جديد');
+  } else {
+    showToast('❌ تم رفض الإذن');
+  }
+}
+
+/* ================================================================
+   ✅ 3. مخزون الفحم الخام
+   ================================================================ */
+function addRawStock() {
+  const input = document.getElementById('rawStockInput');
+  const weight = Number(input.value);
+  if (!weight || weight <= 0) return showToast('❌ أدخل كمية صحيحة');
+  rawStockMovements.push({ id: Date.now().toString(), type: 'in', weight, date: new Date().toISOString(), note: 'استلام فحم خام' });
+  saveData(); input.value = ''; renderStockCard();
+  showToast(`✅ تم إضافة ${weight} كغ للمخزون`);
+  sendPushNotification('📦 مخزون جديد', `تم استلام ${weight} كغ من الفحم الخام`);
+}
+
+function consumeStock(weight, source) {
+  if (weight <= 0) return;
+  rawStockMovements.push({ id: Date.now().toString(), type: 'out', weight, date: new Date().toISOString(), note: `استهلاك (${source})` });
+  saveData();
+}
+
+function renderStockCard() {
+  const received = rawStockMovements.filter(m => m.type === 'in').reduce((s, m) => s + m.weight, 0);
+  const consumed = rawStockMovements.filter(m => m.type === 'out').reduce((s, m) => s + m.weight, 0);
+  const remaining = received - consumed;
+
+  const receivedEl = document.getElementById('stockReceived');
+  const consumedEl = document.getElementById('stockConsumed');
+  const remainingEl = document.getElementById('stockRemaining');
+  const card = document.getElementById('rawStockCard');
+  const badge = document.getElementById('stockStatusBadge');
+
+  if (receivedEl) receivedEl.textContent = received.toFixed(1) + ' كغ';
+  if (consumedEl) consumedEl.textContent = consumed.toFixed(1) + ' كغ';
+  if (remainingEl) remainingEl.textContent = remaining.toFixed(1) + ' كغ';
+
+  if (card && badge) {
+    card.classList.remove('low', 'critical');
+    badge.classList.remove('normal', 'low', 'critical');
+    if (remaining <= STOCK_CRITICAL_THRESHOLD) {
+      card.classList.add('critical');
+      badge.classList.add('critical');
+      badge.innerHTML = '<i class="fa-solid fa-exclamation-triangle"></i> <span>حرج جداً!</span>';
+      if (!stockAlertShown.critical) {
+        sendPushNotification('⚠️ تنبيه مخزون حرج', `الفحم الخام على وشك النفاذ! المتبقي: ${remaining.toFixed(1)} كغ`);
+        stockAlertShown.critical = true;
+      }
+    } else if (remaining <= STOCK_MIN_THRESHOLD) {
+      card.classList.add('low');
+      badge.classList.add('low');
+      badge.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> <span>منخفض</span>';
+      if (!stockAlertShown.low) {
+        sendPushNotification('⚠️ تنبيه مخزون', `الفحم الخام منخفض! المتبقي: ${remaining.toFixed(1)} كغ`);
+        stockAlertShown.low = true;
+      }
+    } else {
+      badge.classList.add('normal');
+      badge.innerHTML = '<i class="fa-solid fa-check-circle"></i> <span>طبيعي</span>';
+      stockAlertShown = { low: false, critical: false };
+    }
+  }
+
+  const listEl = document.getElementById('stockHistoryList');
+  if (listEl) {
+    const recent = [...rawStockMovements].reverse().slice(0, 10);
+    if (recent.length === 0) {
+      listEl.innerHTML = '<p class="text-slate-400 text-center py-2 text-xs">لا توجد حركات مخزون</p>';
+    } else {
+      listEl.innerHTML = recent.map(m => `
+        <div class="flex justify-between items-center bg-white/60 dark:bg-slate-800/60 rounded-lg px-3 py-1.5 text-xs">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-${m.type === 'in' ? 'arrow-down' : 'arrow-up'} ${m.type === 'in' ? 'text-emerald-600' : 'text-rose-600'}"></i>
+            <span class="font-bold ${m.type === 'in' ? 'text-emerald-700' : 'text-rose-700'}">${m.weight} كغ</span>
+            <span class="text-slate-500 text-[10px]">${m.note}</span>
+          </div>
+          <span class="text-slate-400 text-[10px]">${new Date(m.date).toLocaleDateString('ar-EG')}</span>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+/* ================================================================
+   ✅ 4. مقارنة شهرية
+   ================================================================ */
+function renderMonthComparison() {
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonthKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
+
+  const currentTotal = dailyProduction.filter(d => (d.date || '').startsWith(currentMonthKey)).reduce((s, r) => s + (r.dailyCount || 0), 0);
+  const prevTotal = dailyProduction.filter(d => (d.date || '').startsWith(prevMonthKey)).reduce((s, r) => s + (r.dailyCount || 0), 0);
+
+  const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+  document.getElementById('currentMonthLabel').textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('prevMonthLabel').textContent = `${monthNames[prevDate.getMonth()]} ${prevDate.getFullYear()}`;
+  document.getElementById('currentMonthTotal').textContent = currentTotal;
+  document.getElementById('prevMonthTotal').textContent = prevTotal;
+
+  const trendEl = document.getElementById('monthTrend');
+  if (prevTotal === 0 && currentTotal === 0) {
+    trendEl.textContent = '—';
+    trendEl.className = 'text-xl font-black trend-equal';
+  } else if (prevTotal === 0) {
+    trendEl.textContent = '🆕 بداية';
+    trendEl.className = 'text-xl font-black trend-up';
+  } else {
+    const change = ((currentTotal - prevTotal) / prevTotal * 100).toFixed(1);
+    if (change > 0) {
+      trendEl.textContent = `📈 +${change}%`;
+      trendEl.className = 'text-xl font-black trend-up';
+    } else if (change < 0) {
+      trendEl.textContent = `📉 ${change}%`;
+      trendEl.className = 'text-xl font-black trend-down';
+    } else {
+      trendEl.textContent = '➡️ 0%';
+      trendEl.className = 'text-xl font-black trend-equal';
+    }
+  }
+}
+
+/* ================================================================
+   ✅ 5. كشف الرايش غير الطبيعي
+   ================================================================ */
+function detectSawdustAnomaly(newWeight) {
+  const today = new Date().toISOString().slice(0, 10);
+  const last14Days = [];
+  const seenDates = new Set();
+  [...sawdustRecords].reverse().forEach(r => {
+    if (r.date !== today && !seenDates.has(r.date) && last14Days.length < 14) {
+      seenDates.add(r.date);
+      last14Days.push(r.date);
+    }
+  });
+  if (last14Days.length < 3) return;
+  const avg = last14Days.reduce((sum, date) => sum + sawdustRecords.filter(r => r.date === date).reduce((s, r) => s + r.weight, 0), 0) / last14Days.length;
+  if (newWeight > avg * 3 && avg > 0) {
+    showAnomalyAlert(`🚨 رايش غير طبيعي! الوزن المسجل (${newWeight} كغ) أعلى بـ ${(newWeight / avg).toFixed(1)}× من المتوسط (${avg.toFixed(1)} كغ)`);
+    sendPushNotification('🚨 تنبيه شذوذ', `رايش غير طبيعي: ${newWeight} كغ`);
+  }
+}
+
+function showAnomalyAlert(message) {
+  const alert = document.createElement('div');
+  alert.className = 'anomaly-alert';
+  alert.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-xl"></i><div>${message}</div>`;
+  document.body.appendChild(alert);
+  setTimeout(() => {
+    alert.style.transition = 'opacity 0.3s, transform 0.3s';
+    alert.style.opacity = '0';
+    alert.style.transform = 'translateX(100%)';
+    setTimeout(() => alert.remove(), 300);
+  }, 7000);
+}
+
+/* ================================================================
+   الرايش — بطاقات
+   ================================================================ */
+function saveSawdust() {
+  const charType = document.getElementById('sawdustCharType').value;
+  const weight = document.getElementById('sawdustWeight').value;
+  const officer = document.getElementById('sawdustOfficer').value;
+  const note = document.getElementById('sawdustNote').value;
+  if (!charType || !weight || !officer) return showToast('❌ أكمل: نوع الفحم، الوزن، المسؤول');
+  const weightNum = Number(weight);
+  detectSawdustAnomaly(weightNum);
+
+  sawdustRecords.push({
+    id: Date.now().toString(),
+    date: new Date().toISOString().slice(0,10),
+    charType, weight: weightNum, officer,
+    note: note || '',
+    voice: pendingSawdustVoice || null
+  });
+
+  saveData();
+  ['sawdustCharType','sawdustWeight','sawdustOfficer','sawdustNote'].forEach(id => document.getElementById(id).value = '');
+  pendingSawdustVoice = null;
+  updateVoiceButton('sawdust', 'idle');
+  renderVoicePreview('sawdust', null);
+  renderSawdustList(); renderDailyTotals();
+
+  sendPushNotification('♻️ رايش جديد', `${officer} سجّل ${weightNum} كغ رايش`);
+  showToast('✅ تم حفظ الرايش'); scheduleSync();
+}
+
+function renderSawdustList() {
+  const container = document.getElementById('sawdustList');
+  const countEl = document.getElementById('sawdustCount');
+  if (!container) return;
+  const today = new Date().toISOString().slice(0,10);
+  const list = sawdustRecords.filter(r => r.date === today);
+  countEl.textContent = list.length;
+  if (list.length === 0) {
+    container.innerHTML = '<p class="text-slate-400 text-center py-3 text-xs">لا توجد سجلات اليوم</p>';
+    return;
+  }
+  container.innerHTML = list.map(r => `
+    <div class="sawdust-item-card">
+      <div class="card-header-row">
+        <span class="char-type-badge"><i class="fa-solid fa-fire"></i> ${r.charType}</span>
+      </div>
+      <div class="card-grid" style="padding-bottom: 32px;">
+        <div class="info-field">
+          <div class="field-label"><i class="fa-solid fa-recycle"></i> وزن المرتجع</div>
+          <div class="field-value highlight">${r.weight} كغ</div>
+        </div>
+        <div class="info-field">
+          <div class="field-label"><i class="fa-solid fa-user"></i> المسؤول</div>
+          <div class="field-value">${r.officer}</div>
+        </div>
+        ${r.note ? `<div class="info-field" style="grid-column: span 2;">
+          <div class="field-label"><i class="fa-solid fa-note-sticky"></i> ملاحظة</div>
+          <div class="field-value" style="font-size: 13px;">${r.note}</div>
+        </div>` : ''}
+        ${r.voice ? `<div class="info-field" style="grid-column: span 2; padding: 6px;">
+          <audio controls src="${r.voice}" style="width: 100%; height: 30px;"></audio>
+        </div>` : ''}
+      </div>
+      <button class="delete-btn" onclick="deleteSawdust('${r.id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  `).join('');
+}
+
+function deleteSawdust(id) {
+  if (!confirm('حذف سجل الرايش؟')) return;
+  sawdustRecords = sawdustRecords.filter(r => r.id !== id);
+  saveData(); renderSawdustList(); renderDailyTotals(); showToast('🗑️ تم الحذف'); scheduleSync();
+}
+
+/* ================================================================
+   إنتاج اليوم — بطاقات
+   ================================================================ */
+function saveDailyProduction() {
+  const charType = document.getElementById('dailyCharType').value;
+  const cartonType = document.getElementById('dailyCartonType').value;
+  const cartonWeight = document.getElementById('dailyCartonWeight').value;
+  const dailyCount = document.getElementById('dailyCount').value;
+  const officer = document.getElementById('dailyOfficer').value;
+  if (!charType || !cartonType || !dailyCount || !officer) return showToast('❌ أكمل: نوع الفحم، الكرتونة، العدد، المسؤول');
+
+  const totalProductWeight = (Number(cartonWeight) || 0) * (Number(dailyCount) || 0);
+  if (totalProductWeight > 0) consumeStock(totalProductWeight, `إنتاج ${charType}`);
+
+  dailyProduction.push({
+    id: Date.now().toString(),
+    date: new Date().toISOString().slice(0,10),
+    charType, cartonType,
+    cartonWeight: Number(cartonWeight) || 0,
+    dailyCount: Number(dailyCount) || 0,
+    officer,
+    voice: pendingCharVoice || null
+  });
+
+  saveData();
+  ['dailyCharType','dailyCartonType','dailyCartonWeight','dailyCount','dailyOfficer'].forEach(id => document.getElementById(id).value = '');
+  pendingCharVoice = null;
+  updateVoiceButton('char', 'idle');
+  renderVoicePreview('char', null);
+  renderDailyList(); renderDailyTotals(); renderStockCard(); renderMonthComparison();
+
+  sendPushNotification('📦 إنتاج جديد', `${officer} سجّل ${dailyCount} كرتونة من ${charType}`);
+  showToast('✅ تم حفظ الإنتاج'); scheduleSync();
+}
+
+function renderDailyList() {
+  const container = document.getElementById('dailyProdList');
+  const countEl = document.getElementById('dailyProdCount');
+  if (!container) return;
+  const today = new Date().toISOString().slice(0,10);
+  const list = dailyProduction.filter(d => d.date === today);
+  countEl.textContent = list.length;
+  if (list.length === 0) {
+    container.innerHTML = '<p class="text-slate-400 text-center py-3 text-xs">لا توجد سجلات اليوم</p>';
+    return;
+  }
+  container.innerHTML = list.map(r => `
+    <div class="daily-item-card">
+      <div class="card-header-row">
+        <span class="char-type-badge"><i class="fa-solid fa-fire"></i> ${r.charType}</span>
+        <span style="font-size: 11px; font-weight: 800; color: #059669;"><i class="fa-solid fa-box"></i> ${r.cartonType}</span>
+      </div>
+      <div class="card-grid" style="padding-bottom: 32px;">
+        <div class="info-field">
+          <div class="field-label"><i class="fa-solid fa-cubes"></i> عدد الإنتاج</div>
+          <div class="field-value highlight">${r.dailyCount} كرتونة</div>
+        </div>
+        <div class="info-field">
+          <div class="field-label"><i class="fa-solid fa-weight-scale"></i> وزن الكرتونة</div>
+          <div class="field-value">${r.cartonWeight} كغ</div>
+        </div>
+        <div class="info-field" style="grid-column: span 2;">
+          <div class="field-label"><i class="fa-solid fa-user-check"></i> مسؤول التعبئة</div>
+          <div class="field-value">${r.officer}</div>
+        </div>
+        ${r.voice ? `<div class="info-field" style="grid-column: span 2; padding: 6px;">
+          <audio controls src="${r.voice}" style="width: 100%; height: 30px;"></audio>
+        </div>` : ''}
+      </div>
+      <button class="delete-btn" onclick="deleteProduction('${r.id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  `).join('');
+}
+
+function deleteProduction(id) {
+  if (!confirm('حذف سجل الإنتاج؟')) return;
+  dailyProduction = dailyProduction.filter(d => d.id !== id);
+  saveData(); renderDailyList(); renderDailyTotals(); renderMonthComparison(); showToast('🗑️ تم الحذف'); scheduleSync();
+}
+
+/* ================================================================
+   الإجماليات
+   ================================================================ */
+function renderDailyTotals() {
+  const today = new Date().toISOString().slice(0,10);
+  const todayProd = dailyProduction.filter(d => d.date === today);
+  const todaySawdust = sawdustRecords.filter(r => r.date === today);
+  const totalCartons = todayProd.reduce((s,r) => s + r.dailyCount, 0);
+  const totalPacked = todayProd.reduce((s,r) => s + (r.cartonWeight * r.dailyCount), 0);
+  const totalSawdust = todaySawdust.reduce((s,r) => s + r.weight, 0);
+  const totalRecords = todayProd.length + todaySawdust.length;
+  const setText = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  setText('statCartons', totalCartons);
+  setText('statWeight', totalPacked.toFixed(1));
+  setText('statSawdust', totalSawdust.toFixed(1));
+  setText('statRecords', totalRecords);
+}
+
+/* ================================================================
+   تصدير الصور
+   ================================================================ */
+function captureElement(elementId, filename) {
+  const el = document.getElementById(elementId);
+  return html2canvas(el, { scale: 2, backgroundColor: '#ffffff', useCORS: true, allowTaint: true }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+function injectWatermark(targetId) {
+  const target = document.getElementById(targetId);
+  const old = target.querySelector('.watermark');
+  if (old) old.remove();
+  target.style.position = 'relative';
+  target.insertAdjacentHTML('afterbegin', `<div class="watermark"><img src="images/logo2.png" alt="wm"></div>`);
+}
+
+async function exportSection(type) {
+  const today = new Date().toISOString().slice(0,10);
+  let html = '', templateId = '', filename = '';
+
+  if (type === 'production') {
+    const list = dailyProduction.filter(d => d.date === today);
+    if (list.length === 0) return showToast('❌ لا يوجد إنتاج اليوم');
+    const totalCartons = list.reduce((s,r) => s + r.dailyCount, 0);
+    const totalWeight = list.reduce((s,r) => s + (r.cartonWeight * r.dailyCount), 0);
+    let rows = list.map((r,i) => `
+      <tr>
+        <td style="padding:10px;border:1px solid #cbd5e1;">${i+1}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;font-weight:bold;color:#047857;">${r.charType}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;">${r.cartonType}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;">${r.cartonWeight} كغ</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;font-weight:bold;color:#15803d;">${r.dailyCount}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;">${r.officer}</td>
+      </tr>`).join('');
+    html = `
+      <div style="text-align:center;margin-bottom:20px;border-bottom:3px solid #eee;padding-bottom:15px;">
+        <h2 style="font-size:24px;font-weight:900;color:#047857;margin:0;">مصنع الريس لإنتاج وتوزيع الفحم</h2>
+        <p style="font-size:14px;font-weight:700;margin:5px 0 0;">المدير: ركان أبو أصيل | مسؤول التسجيل: وائل محمد</p>
+        <div style="display:flex;justify-content:space-between;background:#f0fdf4;padding:12px;border-radius:12px;margin:15px 0;font-weight:800;border:1px solid #86efac;">
+          <div>التاريخ: <span style="color:#6366F1;">${new Date().toLocaleDateString('ar-EG')}</span></div>
+          <div>القسم: <span style="color:#047857;">إنتاج اليوم (الكراتين)</span></div>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px;">
+        <thead><tr style="background:#d1fae5;">
+          <th style="padding:10px;border:1px solid #cbd5e1;">#</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">نوع الفحم</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">الكرتونة</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">وزن الكرتونة</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">عدد الإنتاج</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">مسؤول التعبئة</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="total-box">
+        <div class="total-item"><div class="total-label">📦 إجمالي الكراتين</div><div class="total-value">${totalCartons}</div></div>
+        <div style="width:2px;height:50px;background:#86efac;"></div>
+        <div class="total-item"><div class="total-label">⚖️ الوزن الكلي</div><div class="total-value orange">${totalWeight.toFixed(1)} كغ</div></div>
+        <div style="width:2px;height:50px;background:#86efac;"></div>
+        <div class="total-item"><div class="total-label">📊 عدد السجلات</div><div class="total-value" style="color:#6366F1;">${list.length}</div></div>
+      </div>`;
+    templateId = 'prodExportContent';
+    filename = `إنتاج_اليوم_${today}.png`;
+  } else {
+    const list = sawdustRecords.filter(r => r.date === today);
+    if (list.length === 0) return showToast('❌ لا يوجد رايش اليوم');
+    const totalWeight = list.reduce((s,r) => s + r.weight, 0);
+    let rows = list.map((r,i) => `
+      <tr>
+        <td style="padding:10px;border:1px solid #cbd5e1;">${i+1}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;font-weight:bold;color:#be123c;">${r.charType}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${r.weight} كغ</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;">${r.officer}</td>
+        <td style="padding:10px;border:1px solid #cbd5e1;color:#64748b;">${r.note || '-'}</td>
+      </tr>`).join('');
+    html = `
+      <div style="text-align:center;margin-bottom:20px;border-bottom:3px solid #eee;padding-bottom:15px;">
+        <h2 style="font-size:24px;font-weight:900;color:#be123c;margin:0;">مصنع الريس لإنتاج وتوزيع الفحم</h2>
+        <p style="font-size:14px;font-weight:700;margin:5px 0 0;">المدير: ركان أبو أصيل | مسؤول التسجيل: وائل محمد</p>
+        <div style="display:flex;justify-content:space-between;background:#fef2f2;padding:12px;border-radius:12px;margin:15px 0;font-weight:800;border:1px solid #fca5a5;">
+          <div>التاريخ: <span style="color:#6366F1;">${new Date().toLocaleDateString('ar-EG')}</span></div>
+          <div>القسم: <span style="color:#be123c;">الرايش المرتجع</span></div>
+        </div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px;">
+        <thead><tr style="background:#fee2e2;">
+          <th style="padding:10px;border:1px solid #cbd5e1;">#</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">نوع الفحم</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">وزن المرتجع</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">المسؤول</th>
+          <th style="padding:10px;border:1px solid #cbd5e1;">ملاحظة</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="total-box" style="background: linear-gradient(135deg,#fef2f2,#fee2e2); border-color:#fca5a5;">
+        <div class="total-item"><div class="total-label" style="color:#9f1239;">♻️ إجمالي الرايش</div><div class="total-value" style="color:#be123c;">${totalWeight.toFixed(1)} كغ</div></div>
+        <div style="width:2px;height:50px;background:#fca5a5;"></div>
+        <div class="total-item"><div class="total-label" style="color:#9f1239;">📊 عدد السجلات</div><div class="total-value" style="color:#be123c;">${list.length}</div></div>
+      </div>`;
+    templateId = 'sawdustExportContent';
+    filename = `الرايش_${today}.png`;
+  }
+
+  document.getElementById(templateId).innerHTML = html;
+  injectWatermark(templateId);
+  showToast('جاري التجهيز...');
+  const tplId = type === 'production' ? 'prodExportTemplate' : 'sawdustExportTemplate';
+  await captureElement(tplId, filename);
+  showToast('✅ تم الحفظ');
+}
+
+async function exportDailyReport() {
+  const today = new Date().toISOString().slice(0,10);
+  const todayProd = dailyProduction.filter(d => d.date === today);
+  const todaySawdust = sawdustRecords.filter(r => r.date === today);
+  if (todayProd.length === 0 && todaySawdust.length === 0) return showToast('❌ لا توجد بيانات اليوم');
+  const totalCartons = todayProd.reduce((s,r) => s + r.dailyCount, 0);
+  const totalPacked = todayProd.reduce((s,r) => s + (r.cartonWeight * r.dailyCount), 0);
+  const totalSawdust = todaySawdust.reduce((s,r) => s + r.weight, 0);
+  const prodRows = todayProd.length ? todayProd.map((r,i) => `
+    <tr>
+      <td style="padding:8px;border:1px solid #cbd5e1;">${i+1}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;font-weight:bold;color:#047857;">${r.charType}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;">${r.cartonType}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;">${r.cartonWeight} كغ</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;font-weight:bold;color:#15803d;">${r.dailyCount}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;">${r.officer}</td>
+    </tr>`).join('') : '<tr><td colspan="6" style="padding:15px;text-align:center;color:#94a3b8;">لا يوجد إنتاج اليوم</td></tr>';
+  const sawdustRows = todaySawdust.length ? todaySawdust.map((r,i) => `
+    <tr>
+      <td style="padding:8px;border:1px solid #cbd5e1;">${i+1}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;font-weight:bold;color:#be123c;">${r.charType}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;font-weight:bold;color:#dc2626;">${r.weight} كغ</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;">${r.officer}</td>
+      <td style="padding:8px;border:1px solid #cbd5e1;color:#64748b;">${r.note || '-'}</td>
+    </tr>`).join('') : '<tr><td colspan="5" style="padding:15px;text-align:center;color:#94a3b8;">لا يوجد رايش اليوم</td></tr>';
+  const html = `
+    <div style="text-align:center;margin-bottom:20px;border-bottom:3px solid #eee;padding-bottom:15px;">
+      <h2 style="font-size:26px;font-weight:900;color:#15803d;margin:0;">بسم الله الرحمن الرحيم</h2>
+      <h2 style="font-size:26px;font-weight:900;color:#15803d;margin:0;">مصنع الريس لإنتاج وتوزيع الفحم</h2>
+      <p style="font-size:16px;font-weight:700;margin:5px 0 0;">المدير: ركان أبو أصيل | مسؤول التسجيل: وائل محمد</p>
+      <div style="display:flex;justify-content:space-between;background:#f8fafc;padding:15px;border-radius:12px;margin:15px 0;font-weight:800;border:1px solid #e2e8f0;">
+        <div>التاريخ: <span style="color:#6366F1;">${new Date().toLocaleDateString('ar-EG')}</span></div>
+        <div>التقرير: <span style="color:#6366F1;">إنتاج اليوم والرايش</span></div>
+      </div>
+    </div>
+    <h3 style="font-size:20px;font-weight:900;color:#047857;text-align:center;margin:20px 0 12px;">📦 إنتاج اليوم</h3>
+    <table style="width:100%;border-collapse:collapse;text-align:center;font-size:13px;margin-bottom:20px;">
+      <thead><tr style="background:#d1fae5;">
+        <th style="padding:10px;border:1px solid #cbd5e1;">#</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">نوع الفحم</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">نوع الكرتونة</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">وزن الكرتونة</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">العدد</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">المسؤول</th>
+      </tr></thead>
+      <tbody>${prodRows}</tbody>
+    </table>
+    <h3 style="font-size:20px;font-weight:900;color:#be123c;text-align:center;margin:20px 0 12px;">♻️ الرايش المرتجع</h3>
+    <table style="width:100%;border-collapse:collapse;text-align:center;font-size:13px;margin-bottom:20px;">
+      <thead><tr style="background:#fee2e2;">
+        <th style="padding:10px;border:1px solid #cbd5e1;">#</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">نوع الفحم</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">الوزن</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">المسؤول</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">ملاحظة</th>
+      </tr></thead>
+      <tbody>${sawdustRows}</tbody>
+    </table>
+    <div class="total-box">
+      <div class="total-item"><div class="total-label">📦 إجمالي الكراتين</div><div class="total-value">${totalCartons}</div></div>
+      <div style="width:2px;height:50px;background:#86efac;"></div>
+      <div class="total-item"><div class="total-label">⚖️ الوزن الكلي</div><div class="total-value" style="color:#6366F1;">${totalPacked.toFixed(1)} كغ</div></div>
+      <div style="width:2px;height:50px;background:#86efac;"></div>
+      <div class="total-item"><div class="total-label">♻️ إجمالي الرايش</div><div class="total-value orange">${totalSawdust.toFixed(1)} كغ</div></div>
+    </div>`;
+  document.getElementById('dailyExportContent').innerHTML = html;
+  injectWatermark('dailyExportContent');
+  showToast('جاري التجهيز...');
+  await captureElement('dailyExportTemplate', `إنتاج_اليوم_الكامل_${today}.png`);
+  showToast('✅ تم الحفظ');
+}
+
+function buildReportHTML(records, sender, date) {
+  let rows = '', totalCount = 0, totalWeight = 0;
+  records.forEach((r,i) => {
+    totalCount += Number(r.count)||0; totalWeight += Number(r.weight)||0;
+    rows += `<tr>
+      <td style="padding:10px;border:1px solid #cbd5e1;">${i+1}</td>
+      <td style="padding:10px;border:1px solid #cbd5e1;font-weight:bold;">${r.type}</td>
+      <td style="padding:10px;border:1px solid #cbd5e1;">${r.carton}</td>
+      <td style="padding:10px;border:1px solid #cbd5e1;font-weight:bold;color:#15803d;">${r.count}</td>
+      <td style="padding:10px;border:1px solid #cbd5e1;">${r.weight} كغ</td>
+      <td style="padding:10px;border:1px solid #cbd5e1;">${r.receiver}</td>
+    </tr>`;
+  });
+  return `
+    <div style="text-align:center;margin-bottom:20px;border-bottom:3px solid #eee;padding-bottom:15px;">
+      <h2 style="font-size:26px;font-weight:900;color:#15803d;margin:0;">بسم الله الرحمن الرحيم</h2>
+      <h2 style="font-size:26px;font-weight:900;color:#15803d;margin:0;">مصنع الريس لإنتاج وتوزيع الفحم</h2>
+      <p style="font-size:18px;font-weight:700;margin:5px 0 0;">المدير: ركان أبو أصيل | مسؤول التسجيل: وائل محمد</p>
+      <div style="display:flex;justify-content:space-between;background:#f8fafc;padding:15px;border-radius:12px;margin:15px 0;font-weight:800;border:1px solid #e2e8f0;">
+        <div>المسؤول: <span style="color:#6366F1;">${sender}</span></div>
+        <div>التاريخ: <span style="color:#6366F1;">${date}</span></div>
+      </div>
+    </div>
+    <h3 style="font-size:22px;font-weight:900;color:#F59E0B;text-align:center;margin-bottom:15px;">مخزون الفحم الجاهز</h3>
+    <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px;">
+      <thead><tr style="background:#e2e8f0;">
+        <th style="padding:10px;border:1px solid #cbd5e1;">#</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">نوع الفحم</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">الكرتونة</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">العدد</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">الوزن</th>
+        <th style="padding:10px;border:1px solid #cbd5e1;">المستلم</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="total-box">
+      <div class="total-item"><div class="total-label">مجموع العدد</div><div class="total-value">${totalCount}</div></div>
+      <div style="width:2px;height:50px;background:#86efac;"></div>
+      <div class="total-item"><div class="total-label">مجموع الوزن</div><div class="total-value orange">${totalWeight.toFixed(1)} كغ</div></div>
+      <div style="width:2px;height:50px;background:#86efac;"></div>
+      <div class="total-item"><div class="total-label">عدد السجلات</div><div class="total-value" style="color:#6366F1;">${records.length}</div></div>
+    </div>`;
+}
+
+async function exportTable() {
+  const list = getFilteredRecords();
+  if (list.length === 0) return showToast('❌ لا توجد بيانات');
+  const sender = document.getElementById('senderName').value || 'غير محدد';
+  const date = new Date().toLocaleDateString('ar-EG');
+  document.getElementById('exportContent').innerHTML = buildReportHTML(list, sender, date);
+  injectWatermark('exportContent');
+  showToast('جاري الحفظ...');
+  await captureElement('exportTemplate', `مخزون_الفحم_${new Date().toISOString().slice(0,10)}.png`);
+  showToast('✅ تم الحفظ');
+}
+
+/* ================================================================
+   المزامنة
+   ================================================================ */
+function setSyncStatus(status) {
+  const labels = { online: 'متصل ✓', offline: 'غير متصل', syncing: 'جاري...' };
+  ['syncDot', 'syncDotSettings'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'sync-dot ' + status;
+  });
+  ['syncLabel', 'syncLabelSettings'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = labels[status] || status;
+  });
+}
+function updateLastSyncText() {
+  const last = localStorage.getItem(STORAGE_KEY + '_lastSync');
+  const el = document.getElementById('lastSyncText');
+  if (el) {
+    if (!last) el.textContent = 'لم تتم المزامنة بعد';
+    else el.textContent = new Date(last).toLocaleString('ar-EG');
+  }
+}
+async function syncNow() {
+  if (!SYNC_CONFIG.enabled || isSyncing) return;
+  if (!navigator.onLine) { setSyncStatus('offline'); return showToast('⚠️ لا يوجد اتصال'); }
+  isSyncing = true; setSyncStatus('syncing');
+  try {
+    const payload = { current: currentRecords, archive: archiveRecords, daily: dailyProduction, sawdust: sawdustRecords, rawstock: rawStockMovements, timestamp: new Date().toISOString() };
+    const push = await fetch(SYNC_CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-API-Key': SYNC_CONFIG.apiKey }, body: JSON.stringify(payload) });
+    if (!push.ok) throw new Error('فشل الرفع');
+    const pull = await fetch(SYNC_CONFIG.endpoint, { method: 'GET', headers: { 'X-API-Key': SYNC_CONFIG.apiKey } });
+    if (pull.ok) {
+      const remote = await pull.json();
+      if (remote.current) currentRecords = mergeById(currentRecords, remote.current);
+      if (remote.archive) archiveRecords = mergeById(archiveRecords, remote.archive);
+      if (remote.daily) dailyProduction = mergeById(dailyProduction, remote.daily);
+      if (remote.sawdust) sawdustRecords = mergeById(sawdustRecords, remote.sawdust);
+      if (remote.rawstock) rawStockMovements = mergeById(rawStockMovements, remote.rawstock);
+      saveData(); renderCurrent(); renderArchive(); renderSawdustList(); renderDailyList(); renderDailyTotals(); renderStockCard(); renderMonthComparison();
+    }
+    setSyncStatus('online'); showToast('☁️ تمت المزامنة');
+    localStorage.setItem(STORAGE_KEY + '_lastSync', new Date().toISOString());
+    updateLastSyncText();
+  } catch (err) {
+    console.error(err);
+    setSyncStatus('offline'); showToast('❌ فشل المزامنة');
+  } finally { isSyncing = false; }
+}
+function mergeById(a, b) {
+  const map = new Map();
+  [...a, ...b].forEach(item => { if (item && item.id && !map.has(item.id)) map.set(item.id, item); });
+  return Array.from(map.values());
+}
+function scheduleSync() {
+  if (!SYNC_CONFIG.enabled) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncNow(), 3000);
+}
+function initSync() {
+  window.addEventListener('online', () => { setSyncStatus('online'); syncNow(); });
+  window.addEventListener('offline', () => setSyncStatus('offline'));
+  setSyncStatus(navigator.onLine ? 'online' : 'offline');
+  if (SYNC_CONFIG.intervalMs > 0 && SYNC_CONFIG.enabled) setInterval(() => { if (navigator.onLine) syncNow(); }, SYNC_CONFIG.intervalMs);
+}
+
+/* ================================================================
+   إدارة البيانات
+   ================================================================ */
+function exportAllData() {
+  const all = { current: currentRecords, archive: archiveRecords, daily: dailyProduction, sawdust: sawdustRecords, rawstock: rawStockMovements, exportDate: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `alrays_backup_${new Date().toISOString().slice(0,10)}.json`;
+  link.click();
+  showToast('✅ تم تصدير البيانات');
+}
+function clearAllData() {
+  if (!confirm('⚠️ سيتم مسح كل البيانات نهائياً. هل أنت متأكد؟')) return;
+  if (!confirm('تأكيد أخير: لا يمكن التراجع!')) return;
+  localStorage.removeItem(STORAGE_KEY + '_current');
+  localStorage.removeItem(STORAGE_KEY + '_archive');
+  localStorage.removeItem(STORAGE_KEY + '_daily');
+  localStorage.removeItem(STORAGE_KEY + '_sawdust');
+  localStorage.removeItem(STORAGE_KEY + '_rawstock');
+  currentRecords = []; archiveRecords = []; dailyProduction = []; sawdustRecords = []; rawStockMovements = [];
+  renderCurrent(); renderArchive(); renderSawdustList(); renderDailyList(); renderDailyTotals(); renderStockCard(); renderMonthComparison();
+  updateStorageSize();
+  showToast('🗑️ تم مسح جميع البيانات');
+}
+
+/* ================================================================
+   التهيئة
+   ================================================================ */
+renderCurrent();
+renderArchive();
+renderSawdustList();
+renderDailyList();
+renderDailyTotals();
+renderStockCard();
+renderMonthComparison();
+updateStorageSize();
+
+
+</script>
+
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<style>
+  html, body { overflow-x: hidden; }
+  #dashboardScreen { height: calc(100vh - 40px); height: calc(100dvh - 40px); }
+
+  #sidebarOverlay {
+    position: fixed; inset: 40px 0 0 0; z-index: 30;
+    background: rgba(0,0,0,.5); backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+  }
+  #sidebarOverlay.show { opacity: 1; pointer-events: auto; }
+
+  @media (min-width: 768px) {
+    #sidebar { transform: none !important; }
+    #sidebarOverlay { display: none; }
+  }
+
+  @media (max-width: 767px) {
+    #sidebar {
+      top: 40px; bottom: 0; width: 82vw; max-width: 300px; z-index: 40;
+      box-shadow: -10px 0 30px rgba(0,0,0,.25);
+    }
+    input, select, textarea { font-size: 16px !important; }
+
+    main > .overflow-y-auto { padding: .75rem; }
+    header h1 { font-size: 1rem !important; }
+    .stat-card { padding: 12px 8px; }
+
+    #content-settings .max-w-2xl { max-width: 100%; }
+    #content-settings .p-6 { padding: 1rem; }
+    #content-settings h4 { font-size: 1rem; }
+    #content-settings .flex.justify-between { flex-wrap: wrap; gap: .25rem; }
+    #content-settings button, #content-settings a { min-height: 44px; }
+
+    .push-notification, .anomaly-alert { left: 10px; right: 10px; transform: none; max-width: none; }
+  }
+</style>
+
+<script>
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+  (function () {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebarOverlay');
+    new MutationObserver(() => ov.classList.toggle('show', sb.classList.contains('open')))
+      .observe(sb, { attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', () => { if (window.innerWidth >= 768) closeSidebar(); });
+  })();
+</script>
+</html>
